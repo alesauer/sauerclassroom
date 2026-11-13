@@ -49,3 +49,4 @@ services:
 networks:
   academic_net:
     driver: bridge
+
