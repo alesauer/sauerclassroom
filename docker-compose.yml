@@ -1,0 +1,51 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: academic_backend
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - ./data:/app/data
+      - ./credentials:/app/credentials
+      - ./backend/app:/app/app
+    environment:
+      - DATABASE_URL=sqlite:////app/data/academic_hub.db
+      - CREDENTIALS_DIR=/app/credentials
+      - SECRET_KEY=${SECRET_KEY:-local_dev_secret_key_sauer_classroom}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI:-http://localhost:8000/api/auth/google/callback}
+      - COTEMIG_ADAPTER_MODE=${COTEMIG_ADAPTER_MODE:-mock}
+      - COTEMIG_PORTAL_URL=${COTEMIG_PORTAL_URL:-https://portal.cotemig.com.br}
+    networks:
+      - academic_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: academic_frontend
+    ports:
+      - "127.0.0.1:5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - VITE_PROXY_TARGET=http://backend:8000
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - academic_net
+    restart: unless-stopped
+
+networks:
+  academic_net:
+    driver: bridge

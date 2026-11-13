@@ -1,0 +1,29 @@
+# Credenciais e Sessões (NUNCA VERSIONAR)
+credentials/*
+!credentials/.gitkeep
+*.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!tsconfig.*.json
+.env
+.env.local
+
+# Banco de Dados Local (Contém dados de alunos - LGPD)
+data/*
+!data/.gitkeep
+*.db
+*.sqlite
+*.sqlite3
+
+# Dependências e Builds
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
+.pytest_cache/
+.DS_Store
+Thumbs.db
